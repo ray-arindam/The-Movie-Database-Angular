@@ -26,6 +26,9 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Output() buttonClick = new EventEmitter<Event>();
 
+  /**
+   * Handles the button click event. Emits the buttonClick event if not disabled.
+   */
   onClick(event: Event) {
     if (this.disabled) {
       event.stopPropagation();

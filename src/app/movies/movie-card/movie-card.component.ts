@@ -18,14 +18,23 @@ export class MovieCardComponent {
 
   constructor(private router: Router, public moviesService: MoviesService) {}
 
+  /**
+   * Handles image loading errors by setting a placeholder image.
+   */
   onImgError(event: Event) {
     (event.target as HTMLImageElement).src = this.placeholder;
   }
 
+  /**
+   * Navigates to the detail page for the current movie.
+   */
   goToDetail() {
     this.router.navigate(['/movies', this.movie.id]);
   }
 
+  /**
+   * Toggles the movie's presence in the watchlist and prevents event bubbling.
+   */
   toggleWatchlist(event: Event) {
     event.stopPropagation();
     if (this.moviesService.isInWatchlist(this.movie)) {

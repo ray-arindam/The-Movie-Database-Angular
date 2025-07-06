@@ -79,10 +79,16 @@ export class LandingComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Navigates to the watchlist page.
+   */
   goToWatchlist() {
     this.router.navigate(['/watchlist']);
   }
 
+  /**
+   * Handles search input changes, updates the request payload, and fetches movies.
+   */
   onSearch(value: string) {
     this.requestPayload.searchText = value;
     this.requestPayload.page = 1;
@@ -91,6 +97,9 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.fetchMovies();
   }
 
+  /**
+   * Handles mood selection, updates the request payload, and fetches movies.
+   */
   onMoodSelect(mood: string) {
     this.requestPayload.mood = mood;
     this.requestPayload.page = 1;
@@ -100,6 +109,9 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.fetchMovies();
   }
 
+  /**
+   * Handles page selection, updates the request payload, and fetches movies for the selected page.
+   */
   onPageSelect(page: number) {
     this.requestPayload.page = Number(page);
     this.selectedPage = Number(page);
@@ -107,6 +119,9 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.fetchMovies();
   }
 
+  /**
+   * Persists the current movies state and request payload in the MoviesService.
+   */
   private persistMoviesState() {
     this.moviesService.persistedMovies = this.movies;
     this.moviesService.persistedRequestPayload = { ...this.requestPayload };
@@ -116,6 +131,9 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.moviesService.initialMoviesLoaded = true;
   }
 
+  /**
+   * Fetches movies based on the current request payload (search, mood, or page).
+   */
   fetchMovies() {
     if (this.requestPayload.searchText) {
       this.moviesLoading = true;

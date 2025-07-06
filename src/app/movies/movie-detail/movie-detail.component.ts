@@ -23,6 +23,9 @@ export class MovieDetailComponent implements OnInit {
     public moviesService: MoviesService
   ) {}
 
+  /**
+   * Initializes the component, subscribes to route data, and updates the trailer URL.
+   */
   ngOnInit() {
     this.route.data.subscribe((data) => {
       this.movie = data['movie'];
@@ -31,10 +34,16 @@ export class MovieDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Navigates back to the home page.
+   */
   goBack() {
     this.router.navigate(['/']);
   }
 
+  /**
+   * Advances to the next trailer in the list and updates the trailer URL.
+   */
   nextTrailer() {
     if (!this.movie?.videos?.results?.length) return;
     this.trailerIndex =
@@ -42,6 +51,9 @@ export class MovieDetailComponent implements OnInit {
     this.updateSafeTrailerUrl();
   }
 
+  /**
+   * Goes to the previous trailer in the list and updates the trailer URL.
+   */
   prevTrailer() {
     if (!this.movie?.videos?.results?.length) return;
     this.trailerIndex =
@@ -50,6 +62,9 @@ export class MovieDetailComponent implements OnInit {
     this.updateSafeTrailerUrl();
   }
 
+  /**
+   * Updates the safe URL for the currently selected trailer.
+   */
   updateSafeTrailerUrl() {
     if (
       this.movie?.videos?.results?.length &&
@@ -64,6 +79,9 @@ export class MovieDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Toggles the movie's presence in the watchlist.
+   */
   toggleWatchlist() {
     if (this.moviesService.isInWatchlist(this.movie)) {
       this.moviesService.removeFromWatchlist(this.movie);

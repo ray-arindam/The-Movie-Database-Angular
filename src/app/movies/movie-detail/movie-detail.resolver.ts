@@ -7,6 +7,10 @@ import { Observable } from 'rxjs';
 export class MovieDetailResolver implements Resolve<any> {
   constructor(private moviesService: MoviesService) {}
 
+  /**
+   * Resolves movie details before navigating to the movie detail route.
+   * Fetches movie details using the MoviesService based on the route parameter 'id'.
+   */
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
     const id = route.paramMap.get('id')!;
     return this.moviesService.getMovieDetails(id);
