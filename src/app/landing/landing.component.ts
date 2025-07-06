@@ -8,6 +8,7 @@ import { ButtonComponent } from '../shared/components/button/button.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { finalize, first, Subscription, tap } from 'rxjs';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-landing',
@@ -19,6 +20,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
     ReactiveFormsModule,
     NgxSkeletonLoaderModule,
     ButtonComponent,
+    RouterModule,
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css'],
@@ -42,7 +44,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   searchControl = new FormControl('');
   subscription: Subscription = new Subscription();
 
-  constructor(private moviesService: MoviesService) {}
+  constructor(private moviesService: MoviesService, private router: Router) {}
 
   ngOnInit() {
     this.moviesService
@@ -75,6 +77,10 @@ export class LandingComponent implements OnInit, OnDestroy {
         this.onSearch(value ?? '');
       })
     );
+  }
+
+  goToWatchlist() {
+    this.router.navigate(['/watchlist']);
   }
 
   onSearch(value: string) {
