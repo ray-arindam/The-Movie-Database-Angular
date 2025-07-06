@@ -1,0 +1,118 @@
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-900">
+  <h1 class="text-4xl font-bold text-white mb-8 text-center">
+    <span
+      class="bg-gradient-to-r from-blue-600 via-blue-500 to-violet-500 bg-clip-text text-transparent px-2 py-1 rounded shadow-md mix-blend-lighten"
+      >Movie</span
+    >
+    Therapy, One
+    <span
+      class="bg-gradient-to-r from-blue-600 via-blue-500 to-violet-500 bg-clip-text text-transparent px-2 py-1 rounded shadow-md mix-blend-lighten"
+      >Mood</span
+    >
+    at a Time
+  </h1>
+  <div class="flex gap-4 mb-8 justify-center items-center flex-wrap">
+    <button
+      *ngFor="let mood of moods"
+      (click)="onMoodSelect(mood.value)"
+      class="px-6 py-3 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+    >
+      {{ mood.label }}
+    </button>
+  </div>
+  <app-search-bar [formControl]="searchControl"></app-search-bar>
+
+  <ng-container *ngIf="moviesLoading; else deferLoaded">
+    <ngx-skeleton-loader
+      count="16"
+      appearance="square"
+      class="w-full px-6 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6"
+      [theme]="{
+        extendsFromRoot: true,
+        height: '340px',
+        width: '100%',
+        borderRadius: '0.75rem',
+        backgroundColor: '#2d3748',
+        marginBottom: '0',
+        boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)'
+      }"
+      [animation]="'progress-dark'"
+      [loadingText]="''"
+    >
+    </ngx-skeleton-loader>
+  </ng-container>
+
+  <ng-template #deferLoaded>
+    <ng-container
+      *ngIf="!initialMoviesLoaded || movies.length > 0; else noResults"
+    >
+      <app-movie-list [movies]="movies"></app-movie-list>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #noResults>
+    <div
+      class="flex flex-col items-center justify-center min-h-[200px] text-center text-gray-400"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-16 w-16 mb-4 text-gray-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9.75 17L9 21m5.25-4l.75 4m-7.5-4h10.5M4.5 21h15M12 3v12m0 0l-3.5-3.5M12 15l3.5-3.5"
+        />
+      </svg>
+      <div class="text-xl font-semibold mb-2">No results found</div>
+      <div class="text-base">Try a different search or mood.</div>
+    </div>
+  </ng-template>
+
+  <div
+    *ngIf="movies.length > 0"
+    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 bg-opacity-90 rounded-full px-4 py-2 flex gap-2 shadow-lg z-50"
+  >
+    <button
+      (click)="onPageSelect(1)"
+      [class.disabled]="selectedPage === 1"
+      class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-blue-500 hover:text-white transition font-semibold text-lg focus:outline-none cursor-pointer"
+    >
+      {{ "<<" }}
+    </button>
+    <button
+      [class.disabled]="selectedPage === 1"
+      (click)="onPageSelect(selectedPage - 1)"
+      class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-blue-500 hover:text-white transition font-semibold text-lg focus:outline-none cursor-pointer"
+    >
+      {{ "<" }}
+    </button>
+    <button
+      *ngFor="let page of pages"
+      (click)="onPageSelect(page)"
+      [class.bg-blue-600]="selectedPage === page"
+      [class.text-white]="selectedPage === page"
+      class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-blue-500 hover:text-white transition font-semibold text-lg focus:outline-none cursor-pointer"
+    >
+      {{ page }}
+    </button>
+    <button
+      (click)="onPageSelect(selectedPage + 1)"
+      [class.disabled]="selectedPage === totalPages"
+      class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-blue-500 hover:text-white transition font-semibold text-lg focus:outline-none cursor-pointer"
+    >
+      {{ ">" }}
+    </button>
+    <button
+      (click)="onPageSelect(totalPages)"
+      [class.disabled]="selectedPage === totalPages"
+      class="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 hover:bg-blue-500 hover:text-white transition font-semibold text-lg focus:outline-none cursor-pointer"
+    >
+      {{ ">>" }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="min-h-screen bg-gray-900 text-white p-8">
+  <div *ngIf="movie">
+    <div class="flex flex-col md:flex-row gap-8">
+      <img
+        [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+        alt="{{ movie.title }} poster"
+        class="w-64 rounded-lg shadow-md"
+      />
+      <div>
+        <h1 class="text-4xl font-bold mb-2">{{ movie.title }}</h1>
+        <p class="mb-2">
+          Release Year: {{ movie.release_date | date : "yyyy" }}
+        </p>
+        <p class="mb-2">
+          Rating:
+          <span class="text-yellow-400">★ {{ movie.vote_average }}</span>
+        </p>
+        <p class="mb-4">{{ movie.overview }}</p>
+        <h2 class="text-2xl font-semibold mt-6 mb-2">Trailers</h2>
+        <div *ngIf="movie.videos?.results?.length; else noTrailers">
+          <div *ngFor="let video of movie.videos.results" class="mb-2">
+            <a
+              [href]="'https://www.youtube.com/watch?v=' + video.key"
+              target="_blank"
+              class="text-blue-400 underline"
+              >{{ video.name }}</a
+            >
+          </div>
+        </div>
+        <ng-template #noTrailers><p>No trailers available.</p></ng-template>
+        <h2 class="text-2xl font-semibold mt-6 mb-2">Cast</h2>
+        <div class="flex flex-wrap gap-2">
+          <div
+            *ngFor="let cast of movie.credits?.cast?.slice(0, 8)"
+            class="bg-gray-800 rounded px-2 py-1"
+          >
+            {{ cast.name }} as {{ cast.character }}
+          </div>
+        </div>
+        <h2 class="text-2xl font-semibold mt-6 mb-2">Similar Movies</h2>
+        <div class="flex flex-wrap gap-4">
+          <div
+            *ngFor="let similar of movie.similar?.results?.slice(0, 4)"
+            class="w-40"
+          >
+            <img
+              [src]="'https://image.tmdb.org/t/p/w200' + similar.poster_path"
+              alt="{{ similar.title }} poster"
+              class="rounded mb-1"
+            />
+            <div class="text-sm">{{ similar.title }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
