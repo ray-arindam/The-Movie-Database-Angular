@@ -1,6 +1,45 @@
 <div
-  class="bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer hover:scale-105 transition"
+  class="bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer hover:scale-105 transition relative"
+  (click)="goToDetail()"
 >
+  <button
+    (click)="toggleWatchlist($event)"
+    class="absolute top-2 right-2 z-10 bg-gray-900 bg-opacity-70 rounded-full p-2 hover:bg-blue-600 transition"
+    [attr.aria-label]="
+      moviesService.isInWatchlist(movie)
+        ? 'Remove from Watchlist'
+        : 'Add to Watchlist'
+    "
+  >
+    <ng-container *ngIf="moviesService.isInWatchlist(movie); else addIcon">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-blue-400"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="M5 3a2 2 0 00-2 2v12a1 1 0 001.447.894L10 15.118l5.553 2.776A1 1 0 0017 17V5a2 2 0 00-2-2H5z"
+        />
+      </svg>
+    </ng-container>
+    <ng-template #addIcon>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 5v14l7-7 7 7V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+        />
+      </svg>
+    </ng-template>
+  </button>
   <img
     [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
     alt="Movie poster"

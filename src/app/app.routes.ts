@@ -13,6 +13,13 @@ export const routes: Routes = [
       import('./movies/movies.routes').then((m) => m.moviesRoutes),
   },
   {
+    path: 'watchlist',
+    loadComponent: () =>
+      import('./movies/watchlist/watchlist.component').then(
+        (m) => m.WatchlistComponent
+      ),
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full',

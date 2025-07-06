@@ -1,9 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MoviesService } from '../movies/movies.service';
-import { CommonModule } from '@angular/common';
 import { MovieListComponent } from '../movies/movie-list/movie-list.component';
 import { Movie } from '../shared/types/movie';
 import { SearchBarComponent } from '../shared/components/search-bar/search-bar.component';
+import { ButtonComponent } from '../shared/components/button/button.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { finalize, first, Subscription, tap } from 'rxjs';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
@@ -17,6 +18,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
     SearchBarComponent,
     ReactiveFormsModule,
     NgxSkeletonLoaderModule,
+    ButtonComponent,
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css'],
@@ -55,6 +57,19 @@ export class LandingComponent implements OnInit, OnDestroy {
         }));
       });
 
+    // Restore persisted state if available
+    if (this.moviesService.persistedMovies.length > 0) {
+      this.movies = this.moviesService.persistedMovies;
+      this.requestPayload = { ...this.moviesService.persistedRequestPayload };
+      this.totalPages = this.moviesService.persistedTotalPages;
+      this.selectedPage = this.moviesService.persistedSelectedPage;
+      this.pages = this.moviesService.persistedPages;
+      this.initialMoviesLoaded = this.moviesService.initialMoviesLoaded;
+      this.searchControl.setValue(this.requestPayload.searchText, {
+        emitEvent: false,
+      });
+    }
+
     this.subscription.add(
       this.searchControl.valueChanges.subscribe((value) => {
         this.onSearch(value ?? '');
@@ -86,6 +101,15 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.fetchMovies();
   }
 
+  private persistMoviesState() {
+    this.moviesService.persistedMovies = this.movies;
+    this.moviesService.persistedRequestPayload = { ...this.requestPayload };
+    this.moviesService.persistedTotalPages = this.totalPages;
+    this.moviesService.persistedSelectedPage = this.selectedPage;
+    this.moviesService.persistedPages = this.pages;
+    this.moviesService.initialMoviesLoaded = true;
+  }
+
   fetchMovies() {
     if (this.requestPayload.searchText) {
       this.moviesLoading = true;
@@ -98,6 +122,7 @@ export class LandingComponent implements OnInit, OnDestroy {
             this.totalPages = Math.min(movies.total_pages, 100);
             this.pages = this.getPages(this.totalPages, this.selectedPage);
             this.initialMoviesLoaded = true;
+            this.persistMoviesState();
           },
           error: (error) => {
             console.error('Error fetching movies:', error);
@@ -120,6 +145,7 @@ export class LandingComponent implements OnInit, OnDestroy {
             this.totalPages = Math.min(movies.total_pages, 100);
             this.pages = this.getPages(this.totalPages, this.selectedPage);
             this.initialMoviesLoaded = true;
+            this.persistMoviesState();
           },
           error: (error) => {
             console.error('Error fetching movies:', error);
@@ -135,6 +161,17 @@ export class LandingComponent implements OnInit, OnDestroy {
       this.movies = [];
       this.pages = [];
       this.totalPages = 1;
+      // Clear persisted state
+      this.moviesService.persistedMovies = [];
+      this.moviesService.persistedRequestPayload = {
+        searchText: '',
+        page: 1,
+        mood: '',
+      };
+      this.moviesService.persistedTotalPages = 1;
+      this.moviesService.persistedSelectedPage = 1;
+      this.moviesService.persistedPages = [];
+      this.moviesService.initialMoviesLoaded = false;
     }
   }
 

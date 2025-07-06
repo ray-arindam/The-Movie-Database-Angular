@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { MovieListComponent } from './movie-list/movie-list.component';
+import { MovieDetailResolver } from './movie-detail/movie-detail.resolver';
 
 export const moviesRoutes: Routes = [
   {
@@ -9,9 +10,7 @@ export const moviesRoutes: Routes = [
         (m) => m.MovieDetailComponent
       ),
     resolve: {
-      movie: import('./movie-detail/movie-detail.resolver').then(
-        (m) => m.MovieDetailResolver
-      ),
+      movie: MovieDetailResolver,
     },
   },
   {

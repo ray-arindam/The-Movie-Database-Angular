@@ -1,35 +1,139 @@
-<div class="min-h-screen bg-gray-900 text-white p-8">
-  <div *ngIf="movie">
-    <div class="flex flex-col md:flex-row gap-8">
-      <img
-        [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-        alt="{{ movie.title }} poster"
-        class="w-64 rounded-lg shadow-md"
-      />
-      <div>
-        <h1 class="text-4xl font-bold mb-2">{{ movie.title }}</h1>
-        <p class="mb-2">
-          Release Year: {{ movie.release_date | date : "yyyy" }}
+<div class="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center">
+  <button
+    class="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition self-start"
+    (click)="goBack()"
+  >
+    ← Back
+  </button>
+  <div
+    *ngIf="movie"
+    class="w-full max-w-6xl flex flex-col items-center"
+    style="width: 80vw"
+  >
+    <img
+      [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+      alt="{{ movie.title }} poster"
+      class="rounded-lg shadow-md mb-6 poster-responsive"
+    />
+    <div class="flex items-center justify-center gap-4 mb-4">
+      <button
+        (click)="toggleWatchlist()"
+        class="bg-gray-900 bg-opacity-70 rounded-full p-2 hover:bg-blue-600 transition"
+        [attr.aria-label]="
+          moviesService.isInWatchlist(movie)
+            ? 'Remove from Watchlist'
+            : 'Add to Watchlist'
+        "
+      >
+        <ng-container *ngIf="moviesService.isInWatchlist(movie); else addIcon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 text-blue-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M5 3a2 2 0 00-2 2v12a1 1 0 001.447.894L10 15.118l5.553 2.776A1 1 0 0017 17V5a2 2 0 00-2-2H5z"
+            />
+          </svg>
+        </ng-container>
+        <ng-template #addIcon>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 5v14l7-7 7 7V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+            />
+          </svg>
+        </ng-template>
+      </button>
+      <h1 class="text-4xl font-bold mb-4 text-center">{{ movie.title }}</h1>
+    </div>
+    <div
+      class="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 movie-details-row"
+    >
+      <div
+        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 w-full md:w-auto justify-center"
+      >
+        <span
+          class="bg-gray-800 rounded px-4 py-2 text-lg font-semibold text-center"
+          >Release Year: {{ movie.release_date | date : "yyyy" }}</span
+        >
+        <span
+          class="bg-gray-800 rounded px-4 py-2 text-lg font-semibold text-center"
+          >★ {{ movie.vote_average | number : "1.2-2" }}</span
+        >
+      </div>
+      <div class="flex-1">
+        <p class="text-base text-center md:text-left mt-4 md:mt-0">
+          {{ movie.overview }}
         </p>
-        <p class="mb-2">
-          Rating:
-          <span class="text-yellow-400">★ {{ movie.vote_average }}</span>
-        </p>
-        <p class="mb-4">{{ movie.overview }}</p>
-        <h2 class="text-2xl font-semibold mt-6 mb-2">Trailers</h2>
-        <div *ngIf="movie.videos?.results?.length; else noTrailers">
-          <div *ngFor="let video of movie.videos.results" class="mb-2">
-            <a
-              [href]="'https://www.youtube.com/watch?v=' + video.key"
-              target="_blank"
-              class="text-blue-400 underline"
-              >{{ video.name }}</a
+      </div>
+    </div>
+    <div class="w-full bg-gray-800 rounded-lg p-4 mb-8">
+      <h2 class="text-2xl font-semibold mb-4 text-center">Trailers</h2>
+      <div
+        *ngIf="movie.videos?.results?.length; else noTrailers"
+        class="flex flex-col items-center"
+      >
+        <div class="relative w-full flex flex-col items-center">
+          <div class="flex justify-center items-center w-full">
+            <button
+              (click)="prevTrailer()"
+              class="absolute left-0 z-10 bg-gray-700 hover:bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg"
+              [disabled]="movie.videos.results.length < 2"
+              style="top: 50%; transform: translateY(-50%)"
             >
+              &#8592;
+            </button>
+            <iframe
+              *ngIf="safeTrailerUrl"
+              width="560"
+              height="315"
+              [src]="safeTrailerUrl"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              class="rounded-lg shadow-md mx-12 w-full max-w-2xl aspect-video"
+            ></iframe>
+            <button
+              (click)="nextTrailer()"
+              class="absolute right-0 z-10 bg-gray-700 hover:bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg"
+              [disabled]="movie.videos.results.length < 2"
+              style="top: 50%; transform: translateY(-50%)"
+            >
+              &#8594;
+            </button>
+          </div>
+          <div class="mt-2 text-center text-gray-300">
+            <span *ngIf="movie.videos.results.length > 1">
+              Trailer {{ trailerIndex + 1 }} of
+              {{ movie.videos.results.length }}:
+            </span>
+            <span class="font-semibold">{{
+              movie.videos.results[trailerIndex]?.name
+            }}</span>
           </div>
         </div>
-        <ng-template #noTrailers><p>No trailers available.</p></ng-template>
-        <h2 class="text-2xl font-semibold mt-6 mb-2">Cast</h2>
-        <div class="flex flex-wrap gap-2">
+      </div>
+      <ng-template #noTrailers>
+        <p class="text-center">No trailers available.</p>
+      </ng-template>
+    </div>
+    <div class="flex flex-col md:flex-row w-full gap-8 mt-8 movie-details-row">
+      <div class="flex-1">
+        <h2 class="text-2xl font-semibold mb-2 text-center md:text-left">
+          Cast
+        </h2>
+        <div class="flex flex-wrap gap-2 justify-center md:justify-start">
           <div
             *ngFor="let cast of movie.credits?.cast?.slice(0, 8)"
             class="bg-gray-800 rounded px-2 py-1"
@@ -37,8 +141,12 @@
             {{ cast.name }} as {{ cast.character }}
           </div>
         </div>
-        <h2 class="text-2xl font-semibold mt-6 mb-2">Similar Movies</h2>
-        <div class="flex flex-wrap gap-4">
+      </div>
+      <div class="flex-1">
+        <h2 class="text-2xl font-semibold mb-2 text-center md:text-left">
+          Similar Movies
+        </h2>
+        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
           <div
             *ngFor="let similar of movie.similar?.results?.slice(0, 4)"
             class="w-40"
@@ -46,9 +154,9 @@
             <img
               [src]="'https://image.tmdb.org/t/p/w200' + similar.poster_path"
               alt="{{ similar.title }} poster"
-              class="rounded mb-1"
+              class="rounded mb-1 mx-auto"
             />
-            <div class="text-sm">{{ similar.title }}</div>
+            <div class="text-sm text-center">{{ similar.title }}</div>
           </div>
         </div>
       </div>

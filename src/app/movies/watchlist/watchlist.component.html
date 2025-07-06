@@ -1,0 +1,49 @@
+<div class="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center">
+  <h1 class="text-3xl font-bold mb-8">My Watchlist</h1>
+  <div
+    *ngIf="watchlist.length; else emptyList"
+    class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 w-full max-w-6xl"
+  >
+    <div
+      *ngFor="let movie of watchlist"
+      class="bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer hover:scale-105 transition relative"
+      (click)="goToDetail(movie)"
+    >
+      <button
+        (click)="removeFromWatchlist(movie, $event)"
+        class="absolute top-2 right-2 z-10 bg-gray-900 bg-opacity-70 rounded-full p-2 hover:bg-red-600 transition"
+        aria-label="Remove from Watchlist"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 text-red-400"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M5 3a2 2 0 00-2 2v12a1 1 0 001.447.894L10 15.118l5.553 2.776A1 1 0 0017 17V5a2 2 0 00-2-2H5z"
+          />
+        </svg>
+      </button>
+      <img
+        [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+        alt="Movie poster"
+        class="w-full h-72 object-cover"
+      />
+      <div class="p-4">
+        <h2 class="text-lg font-bold text-white mb-2">{{ movie.title }}</h2>
+        <div class="flex flex-row-reverse sm:items-center justify-between">
+          <p class="text-gray-400">{{ movie.release_date | date : "yyyy" }}</p>
+          <div class="flex items-center">
+            <span class="text-yellow-400 font-semibold"
+              >★ {{ movie.vote_average | number : "1.2-2" }}</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #emptyList>
+    <div class="text-gray-400 text-lg mt-16">Your watchlist is empty.</div>
+  </ng-template>
+</div>

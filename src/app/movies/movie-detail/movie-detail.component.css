@@ -29,3 +29,27 @@
 .text-sm { font-size: 0.875rem; }
 .text-blue-400 { color: #60a5fa; }
 .underline { text-decoration: underline; }
+.poster-responsive {
+  width: 40%;
+  min-width: 160px;
+  max-width: 320px;
+}
+@media (max-width: 768px) {
+  .poster-responsive {
+    width: 70%;
+    max-width: 90vw;
+  }
+}
+@media (max-width: 900px) {
+  .movie-details-row {
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  .movie-details-row > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+}
